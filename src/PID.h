@@ -1,6 +1,11 @@
 #ifndef PID_H
 #define PID_H
 
+#include <vector>
+#include <string>
+#include <iostream>
+#include <fstream>
+
 class PID {
 public:
   /*
@@ -9,6 +14,8 @@ public:
   double p_error;
   double i_error;
   double d_error;
+
+  double cteo;
 
   /*
   * Coefficients
