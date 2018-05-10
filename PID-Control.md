@@ -1,58 +1,37 @@
 
 ---
 
-**Kidnapped Vehicle Localization Project**
+**PID Control Project**
 
 The goal of this project are the following:
 
-Implement the Particle Filter Localization method for tracking the pose of a car in a map with prediction of its state from its motion sensors (velocity, yaw_rate) and update of its state using measurements of landmarks from a local range sensor.
+Implement the PID controller and control the simulator car such that the car drives through the track without leaving it.
 
 [//]: # (Image References)
 [image1]: ./examples/first.png
 [image2]: ./examples/second.png
 [image3]: ./examples/third.png
 [image4]: ./examples/fourth.png
-[video1]: ,/examples/localization.mp4
+[image5]: ./examples/fifth.png
+[video1]: ,/examples/pid.mp4
 
-## [Rubric Points](https://review.udacity.com/#!/rubrics/747/view)
+## [Rubric Points](https://review.udacity.com/#!/rubrics/824/view)
 All the code for this project has been derived from the example code in the course and is in this directory.
-[Here](https://github.com/gvp-study/CarND-Kidnapped-Vehicle-Project.git)
+[Here](https://github.com/gvp-study/CarND-PID-Control-Project.git)
 ---
 
-### Kidnapped Vehicle Localization
-## Implementing the Particle Filter
-The directory structure of this repository is as follows:
+### PID Controller
+## Implementing the PID Controller
 
-```
-root
-|   build.sh
-|   clean.sh
-|   CMakeLists.txt
-|   README.md
-|   run.sh
-|
-|___data
-|   |   
-|   |   map_data.txt
-|   
-|   
-|___src
-|    |   helper_functions.h
-|    |   main.cpp
-|    |   map.h
-|    |   particle_filter.cpp
-|    |   particle_filter.h
-|
-|___examples
-|    | images and videos   
-```
-I modified the four main functions (init, prediction updateWeights and resample) in particle_filter.cpp. These functions implement the main methods of the particle filter algorithm.
-1. init: This function initializes the particle filter with a certain number of particles and sets them to cluster around the given mean pose with a standard deviations using a normal distribution. The probability of each particle at init is set to 1.0.
-2. prediction: This function takes as input the elapsed time and the velocity and yaw_rate and predicts the pose of each particle. This prediction is computed using a normal noise distribution given by the standard deviation.
-3. updateWeights: This function takes as input the set of observations from the range sensor and matches them to the nearest landmark for each particle. The resulting probability is stored as the updated weight of that particle.
-4. resample: This function resamples the particles based on their probability (weight) and generates a new set of particles. This new set replaces the current samples.
+I implemented the PID control based on the lessons. I tuned the PID parameters manually. I used two sets of PID controllers. One for the steering and one for the throttle.
 
-After the initialization, the filter estimates the pose of the car first by prediction using the motion and then updating the pose based on the range sensor measurements and the landmarks in the map. The result is shown in the output of the simulator as shown in the figures below.
+The steering PID controller was tuned by manually twiddling from a starting set of parameters. I ended up finding the PID values to be KP = 0.13, KI = 0.0005 and KD = 4.0.
+
+The throttle PID controller was also tuned manually and I settled on KP = 0.3, KI = 0.0, KD = 0.02. I also slowed down the car based on the steering angle.
+
+throttle = max_speed - pidt.TotalError() - max_speed*(1.0 - cos(angle*M_PI/180.0));
+
+The result is shown in the output of the simulator at different points along the track as shown in the figures below.
 
 ![alt text][image1]
 
@@ -60,15 +39,11 @@ After the initialization, the filter estimates the pose of the car first by pred
 
 ![alt text][image3]
 
-The final pose and the error show that the implementaion was successful in terms of accuracy and speed.
-
 ![alt text][image4]
 
-The movie of the simulator running the particle filter localization code is shown below.[link to my video](./examples/localization.mp4)
+The final image shows the car reached a maximum speed of 77 mph.
+
+![alt text][image5]
+
+The movie of the simulator controlled by the PID controller is shown below.[link to my video](./examples/pid.mp4)
 ![alt text][video1]
-The things the grading code is looking for are:
-
-
-1. **Accuracy**: The max translation error and max yaw error are within bounds.
-
-2. **Performance**: The filter completed within the time of 100 seconds.
