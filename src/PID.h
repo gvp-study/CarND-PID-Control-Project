@@ -5,6 +5,9 @@
 #include <string>
 #include <iostream>
 #include <fstream>
+#include <chrono>
+
+using namespace std::chrono;
 
 class PID {
 public:
@@ -16,7 +19,6 @@ public:
   double d_error;
 
   double cteo;
-
   /*
   * Coefficients
   */ 

@@ -28,21 +28,33 @@ std::string hasData(std::string s) {
   return "";
 }
 
+high_resolution_clock::time_point current_t = high_resolution_clock::now();
+double max_speed = 0.7;
+double odometer = 0.0;
+double total_cte = 0.0;
+
 int main(int argc, char** argv)
 {
   uWS::Hub h;
-  float Kp = 0.1, Ki = 0.0003, Kd = 3.0;
-  float Kpt = 0.3, Kit = 0.0, Kdt = 0.02;
+//  float Kp = 0.1, Ki = 0.0003, Kd = 3.0;
+//    float Kp = 0.125, Ki = 0.0003, Kd = 4.0;
+//    float Kp = 0.13, Ki = 0.0003, Kd = 4.0;
+    float Kp = 0.13, Ki = 0.0005, Kd = 4.0;
+//    float Kpt = 0.5, Kit = 0.0, Kdt = 0.08;
+//    float Kpt = 0.7, Kit = 0.0, Kdt = 0.04;
+//    float Kpt = 0.5, Kit = 0.0, Kdt = 0.01;
+    float Kpt = 0.3, Kit = 0.0, Kdt = 0.02;
   if(argc > 1)
     Kp = atof(argv[1]);
   if(argc > 2)
     Ki = atof(argv[2]);
   if(argc > 3)
     Kd = atof(argv[3]);
+  if(argc > 4)
+    max_speed = atof(argv[4]);
   PID pid;
   PID pidt;
   // TODO: Initialize the pid variable.
-//  pid.Init(0.2, 3.0, 0.004);
   pid.Init(Kp, Ki, Kd);
   pidt.Init(Kpt, Kit, Kdt);
   
@@ -71,12 +83,24 @@ int main(int argc, char** argv)
 	  pid.UpdateError(cte);
 	  steer_value = -pid.TotalError();
 
+	  high_resolution_clock::time_point t2 = high_resolution_clock::now();
+	  duration<double> del = duration_cast<duration<double>>(t2 - current_t);
+	  double dt = del.count();
+	  current_t = t2;
+	  odometer += speed*dt;
+	  total_cte += fabs(cte);
 	  pidt.UpdateError(cte);
-	  throttle = 0.75 - pidt.TotalError() - 0.5*fabs(steer_value);
+	  throttle = max_speed - pidt.TotalError() - max_speed*(1.0 - cos(angle*M_PI/180.0));
 
           // DEBUG
-          std::cout << "CTE: " << cte << " Steering Value: " << steer_value;
-          std::cout << " Throttle Value: " << throttle << std::endl;
+          std::cout << "CTE: " << cte;
+	  std::cout << " Steering Value: " << steer_value;
+          std::cout << " Throttle Value: " << throttle;
+          std::cout << " Steering Angle: " << angle;
+          std::cout << " Delta T: " << dt;
+          std::cout << " Odometer : " << odometer;
+          std::cout << " Total Error : " << total_cte;
+          std::cout << " Error / Distance : " << total_cte/odometer << std::endl;
 
           json msgJson;
           msgJson["steering_angle"] = steer_value;
