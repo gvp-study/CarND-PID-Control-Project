@@ -39,7 +39,9 @@ int main(int argc, char** argv)
 //  float Kp = 0.1, Ki = 0.0003, Kd = 3.0;
 //    float Kp = 0.125, Ki = 0.0003, Kd = 4.0;
 //    float Kp = 0.13, Ki = 0.0003, Kd = 4.0;
-    float Kp = 0.13, Ki = 0.0005, Kd = 4.0;
+//    float Kp = 0.13, Ki = 0.0005, Kd = 4.0;
+    float Kp = 0.13, Ki = 0.0001, Kd = 4.0;
+
 //    float Kpt = 0.5, Kit = 0.0, Kdt = 0.08;
 //    float Kpt = 0.7, Kit = 0.0, Kdt = 0.04;
 //    float Kpt = 0.5, Kit = 0.0, Kdt = 0.01;

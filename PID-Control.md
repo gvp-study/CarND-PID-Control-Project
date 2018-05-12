@@ -25,11 +25,28 @@ All the code for this project has been derived from the example code in the cour
 
 I implemented the PID control based on the lessons. I tuned the PID parameters manually. I used two sets of PID controllers. One for the steering and one for the throttle.
 
-The steering PID controller was tuned by manually twiddling from a starting set of parameters. I ended up finding the PID values to be KP = 0.13, KI = 0.0005 and KD = 4.0.
+## Steering PID
+The steering PID controller was tuned by manually twiddling from a starting set of parameters. I ended up finding the PID values to be Kp = 0.13, Ki = 0.0001 and Kd = 4.0.
 
-The throttle PID controller was also tuned manually and I settled on KP = 0.3, KI = 0.0, KD = 0.02. I also slowed down the car based on the steering angle.
+## Reflections on the Steering PID terms
+To find the appropriate values of the PID terms I manually twiddled the parameters. For this I needed to find an error measure which could incorporate the error for the whole track and normalize it by the distance. So I integrated the distance from the increments and the absolute CTE and obtained the ratio of the latter to the former. I then twiddled the PID terms based on this value after one track run.
+```code
+odometer += speed*dt;
+total_cte += fabs(cte);
+std::cout << " Error / Distance : " << total_cte/odometer << std::endl;
+```
+### Propotional Term P
+I started out with just the P term and observed that the system oscillates when only the P term is nonzero as explained in the course notes. I settled on the value of 0.13.
+### Differential Term D
+I then increased the differential term from 0, 1, 2, 3, till 4.0 when I found it could keep the car on track for a whole lap.
+### Integral Term I
+I found that even low values of I brought back oscillations in the driving. So I manually twiddled it to 0.0001. This small value reduced the total_cte/odometer error from experiments.
 
-throttle = max_speed - pidt.TotalError() - max_speed*(1.0 - cos(angle*M_PI/180.0));
+## Throttle PID
+The throttle PID controller was also tuned manually and I settled on Kp = 0.3, Ki = 0.0, Kd = 0.02. In addition to the PID term from the CTE, I also slowed down the car based on the steering angle. This allows the car to slow down at all turns.
+```code
+throttle = max_speed - pidt.TotalError() - max_speed*(1.0 - cos(steering_angle*M_PI/180.0));
+```
 
 The result is shown in the output of the simulator at different points along the track as shown in the figures below.
 
